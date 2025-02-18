@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -19,29 +20,46 @@ class ReservationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-s-calendar';
 
+    protected static ?string $modelLabel = 'Reservaciones';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('user_id')
+                    ->relationship(name: 'user', titleAttribute: 'name')
+                    ->label('Usuario')
                     ->required(),
-                Forms\Components\TextInput::make('room_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('distribution_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('room_id')
+                    ->relationship(name: 'room', titleAttribute: 'name')
+                    ->label('Sala')
+                    ->required(),
+                Forms\Components\Select::make('distribution_id')
+                    ->relationship(name: 'distribution', titleAttribute: 'name')
+                    ->label('Distribución de Sillas')
+                    ->required(),
                 Forms\Components\DatePicker::make('start_date')
+                    ->label('Fecha de Inicio')
+                    ->native(false)
                     ->required(),
                 Forms\Components\DatePicker::make('end_date')
+                    ->label('Fecha de Fin')
+                    ->native(false)
                     ->required(),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Select::make('status')
+                    ->label('Estado de la Reserva')
+                    ->options([
+                        'pendiente' => 'Pendiente',
+                        'aprobada' => 'Aprobada',
+                        'rechazada' => 'Rechazada',
+                    ])
                     ->required()
-                    ->maxLength(255)
                     ->default('pendiente'),
                 Forms\Components\Textarea::make('notes')
+                    ->label('Notas Extras')
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('answer')
+                    ->label('Respuesta')
                     ->columnSpanFull(),
             ]);
     }
@@ -50,22 +68,34 @@ class ReservationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Usuario')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('room_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('room.name')
+                    ->label('Sala')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('distribution_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('distribution.name')
+                    ->label('Distribución de Sillas')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_date')
+                    ->label('Fecha de Inicio')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_date')
+                    ->label('Fecha de Fin')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Estado de la Reserva')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'aprobada' => 'success',
+                        'rechazada' => 'danger',
+                        'pendiente' => 'warning',
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -77,10 +107,18 @@ class ReservationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('Estado de la Reserva')
+                    ->options([
+                        'pendiente' => 'Pendiente',
+                        'aprobada' => 'Aprobada',
+                        'rechazada' => 'Rechazada',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
