@@ -19,8 +19,8 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->enum('status', ['pendiente', 'aprobada', 'rechazada'])->default('pendiente');
-            $table->string('notes')->nullable();
-            $table->string('answer')->nullable();
+            $table->text('notes')->nullable();
+            $table->text('answer')->nullable();
             $table->timestamps();
         });
     }
