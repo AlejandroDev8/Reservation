@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ReservationResource\Pages;
-use App\Filament\Resources\ReservationResource\RelationManagers;
-use App\Models\Reservation;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\Reservation;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ReservationResource\Pages;
+use App\Filament\Resources\ReservationResource\RelationManagers;
 
 class ReservationResource extends Resource
 {
@@ -21,6 +22,11 @@ class ReservationResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-s-calendar';
 
     protected static ?string $modelLabel = 'Reservaciones';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->orderBy('id', 'desc');
+    }
 
     public static function form(Form $form): Form
     {
