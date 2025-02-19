@@ -31,10 +31,7 @@ class ReservationsStats extends BaseWidget
             Stat::make('Reservaciones Aprobadas', $this->getApprovedReservations(new Reservation()))
                 ->icon('heroicon-s-check-circle')
                 ->description('Reservaciones aprobadas en total')
-                ->color('success')
-                ->extraAttributes([
-                    'class' => 'cursor-pointer',
-                ]),
+                ->color('success'),
             Stat::make('Reservaciones Pendientes', $this->getPendingReservations(new Reservation()))
                 ->icon('heroicon-s-clock')
                 ->description('Reservaciones pendientes en total')
