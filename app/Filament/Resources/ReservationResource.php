@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ReservationResource\Pages;
 use App\Filament\Resources\ReservationResource\RelationManagers;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class ReservationResource extends Resource
 {
@@ -129,6 +131,19 @@ class ReservationResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->exports([
+                            ExcelExport::make('table')->fromTable()
+                                ->withFilename('Reservaciones_' . date('d-m-Y') . '_export')
+                                ->label('Exportar en formato Tabla')
+                                ->askForFilename()
+                                ->askForWriterType(),
+                            ExcelExport::make('form')->fromForm()
+                                ->withFilename('Reservaciones_' . date('d-m-Y') . '_export')
+                                ->label('Exportar en formato Formulario')
+                                ->askForFilename()
+                                ->askForWriterType(),
+                        ])
                 ]),
             ]);
     }
