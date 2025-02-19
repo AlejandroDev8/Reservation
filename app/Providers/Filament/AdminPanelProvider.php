@@ -26,8 +26,10 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+            ->brandName('Reservaciones - TecnNM - Ciudad Valles')
+            ->favicon(asset('logo.ico'))
             ->path('admin')
-            ->profile(Auth::user())
+            ->profile()
             ->login()
             ->colors([
                 'primary' => Color::Blue,
