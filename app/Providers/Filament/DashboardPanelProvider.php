@@ -28,6 +28,8 @@ class DashboardPanelProvider extends PanelProvider
             ->path('dashboard')
             ->login()
             ->profile()
+            ->brandName('Reservaciones - TecnNM - Ciudad Valles')
+            ->favicon(asset('logo.ico'))
             ->colors([
                 'primary' => Color::Blue,
             ])
