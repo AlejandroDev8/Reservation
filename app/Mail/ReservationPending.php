@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Reservation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,12 +14,14 @@ class ReservationPending extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $reservation;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(Reservation $reservation)
     {
-        //
+        $this->reservation = $reservation;
     }
 
     /**
@@ -38,6 +41,7 @@ class ReservationPending extends Mailable
     {
         return new Content(
             view: 'mails.ReservationPending',
+            with: ['reservation' => $this->reservation],
         );
     }
 
